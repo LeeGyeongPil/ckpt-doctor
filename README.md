@@ -63,8 +63,8 @@ Reading the report of `check`:
 |---|---|---|
 | `check PATH` | Check a model folder, one `.safetensors`, a `*.safetensors.index.json`, or a cached repo id | `ckpt-doctor check ./my-model` |
 | `check org/name` | Check a Hugging Face cache entry (reads `HF_HUB_CACHE`, never the network) | `ckpt-doctor check demo/tiny` |
-| `--revision REF` | Cache only: branch/ref or commit to check (default `main`) | `--revision dev` |
-| `--cache-dir DIR` | Cache folder (default `HF_HUB_CACHE`, else `HF_HOME/hub`) | `--cache-dir ./hub` |
+| `--revision REF` | Cache only: branch/ref or commit to check (default `main`); the cache fix commands carry it too | `--revision dev` |
+| `--cache-dir DIR` | Cache folder (default `HF_HUB_CACHE`, else `HF_HOME/hub`); the cache fix commands carry it too | `--cache-dir ./hub` |
 | `--repo-id ID` | Repo id to put into fix commands for a plain folder | `--repo-id org/name` |
 | `--hash` | Also verify sha256 of every file (reads all bytes, slow on big models) | `check ./my-model --hash` |
 | `--manifest FILE` / `--write-manifest FILE` | Baseline in `sha256sum` format to compare against / to write | `--write-manifest sha256sums.txt` |

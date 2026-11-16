@@ -63,8 +63,8 @@ ckpt-doctor check ./ckpt-sample/mixed
 |---|---|---|
 | `check PATH` | 모델 폴더, `.safetensors` 한 개, `*.safetensors.index.json`, 캐시의 repo id 검사 | `ckpt-doctor check ./my-model` |
 | `check org/name` | Hugging Face 캐시 항목 검사(`HF_HUB_CACHE`를 읽고 네트워크는 쓰지 않음) | `ckpt-doctor check demo/tiny` |
-| `--revision REF` | 캐시 전용: 검사할 브랜치/ref 또는 커밋(기본 `main`) | `--revision dev` |
-| `--cache-dir DIR` | 캐시 폴더(기본 `HF_HUB_CACHE`, 없으면 `HF_HOME/hub`) | `--cache-dir ./hub` |
+| `--revision REF` | 캐시 전용: 검사할 브랜치/ref 또는 커밋(기본 `main`), 캐시 fix 명령에도 같은 값이 들어감 | `--revision dev` |
+| `--cache-dir DIR` | 캐시 폴더(기본 `HF_HUB_CACHE`, 없으면 `HF_HOME/hub`), 캐시 fix 명령에도 같은 값이 들어감 | `--cache-dir ./hub` |
 | `--repo-id ID` | 일반 폴더의 해결 명령에 넣을 repo id | `--repo-id org/name` |
 | `--hash` | 모든 파일의 sha256도 검증(전부 읽으므로 큰 모델은 느림) | `check ./my-model --hash` |
 | `--manifest FILE` / `--write-manifest FILE` | 비교할 / 새로 쓸 `sha256sum` 형식 기준 파일 | `--write-manifest sha256sums.txt` |
