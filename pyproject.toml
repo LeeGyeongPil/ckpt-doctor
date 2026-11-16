@@ -1,6 +1,6 @@
 [project]
 name = "ckpt-doctor"
-version = "0.1.0"
+version = "0.1.1"
 description = "Offline diagnosis for safetensors model folders: which file is broken, why, and the command that fixes it."
 readme = "README.md"
 license = "MIT"
