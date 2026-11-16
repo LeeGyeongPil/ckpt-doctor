@@ -88,7 +88,11 @@ def check_path(
     if target.kind in ("file", "index"):
         fix_folder = os.path.dirname(target.display) or "."
     ctx = FixContext(
-        folder=fix_folder, repo_id=target.repo_id, in_cache=target.kind == "cache"
+        folder=fix_folder,
+        repo_id=target.repo_id,
+        in_cache=target.kind == "cache",
+        cache_dir=str(cache_dir) if cache_dir and target.kind == "cache" else None,
+        revision=target.revision if target.kind == "cache" else None,
     )
     col = _Collector(target, ctx)
     report = Report(target=target.display)

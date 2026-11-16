@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import os
+import shlex
+import shutil
 from pathlib import Path
 
 import pytest
@@ -32,7 +34,8 @@ def test_findings_point_at_the_right_files(cache: Path, no_network: None) -> Non
     assert by_code["CD405"].params["expected"] - by_code["CD405"].params["actual"] == 11
     assert by_code["CD403"].params["ref"] == "dev"
     assert by_code["CD403"].severity.value == "warning"  # not the checked revision
-    assert by_code["CD402"].fix == "hf download demo/tiny tokenizer.json --force-download"
+    q = "--cache-dir %s" % shlex.quote(str(cache))
+    assert by_code["CD402"].fix == "hf download demo/tiny tokenizer.json %s --force-download" % q
 
 
 def test_hf_home_fallback(cache: Path, tmp_path: Path) -> None:
@@ -82,3 +85,27 @@ def test_unsupported_and_broken_trees(clean: Path) -> None:
     assert check_path(clean).codes() == {"CD406"}
     (trees / "a.json").write_text("{nope")
     assert check_path(clean).codes() == {"CD407"}
+
+
+def test_fix_commands_carry_cache_dir_and_revision(tmp_path: Path, cache: Path) -> None:
+    cd = str(tmp_path / "hub 2")  # a space forces quoting
+    shutil.copytree(cache, cd, symlinks=True)
+    (Path(cd) / "models--demo--tiny" / "refs" / "dev").write_text(COMMIT)
+    report = check_path("demo/tiny", cache_dir=cd, revision="dev")
+    by_code = {f.code: f for f in report.findings}
+    q = shlex.quote(cd)
+    assert q.startswith("'")
+    assert by_code["CD402"].fix == (
+        f"hf download demo/tiny tokenizer.json --cache-dir {q} --revision dev --force-download"
+    )
+    assert by_code["CD405"].fix == (
+        f"hf download demo/tiny config.json --cache-dir {q} --revision dev --force-download"
+    )
+    assert by_code["CD401"].fix == f"hf cache prune --dry-run --cache-dir {q}"
+
+
+def test_fix_commands_unchanged_without_cache_dir_or_revision(cache: Path) -> None:
+    report = check_path("demo/tiny", env={"HF_HUB_CACHE": str(cache)})
+    by_code = {f.code: f for f in report.findings}
+    assert by_code["CD402"].fix == "hf download demo/tiny tokenizer.json --force-download"
+    assert by_code["CD401"].fix == "hf cache prune --dry-run"
