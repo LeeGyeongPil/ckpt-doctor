@@ -1,0 +1,32 @@
+# Tests need no network, no GPU and no model files: every checkpoint is synthetic.
+name: ci
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 3 * * 1"   # weekly: catch changes in runtimes or the cross-check library
+  workflow_dispatch:
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.10", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6.8.0
+      - run: uv python install ${{ matrix.python }}
+      - run: uv sync --locked --python ${{ matrix.python }}
+      - run: uv run --python ${{ matrix.python }} pytest -q
+      - name: Cross-check against the official safetensors library
+        run: uv run --python ${{ matrix.python }} --group crosscheck pytest -q tests/test_crosscheck.py
+      - name: Sample check (the quick start)
+        run: uv run --python ${{ matrix.python }} ckpt-doctor sample "$RUNNER_TEMP/ckpt-sample" --check
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6.8.0
+      - run: uv build
